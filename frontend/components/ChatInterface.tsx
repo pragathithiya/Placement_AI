@@ -108,7 +108,7 @@ export default function ChatInterface({ placementId }: ChatInterfaceProps) {
             </button>
           ))}
         </div>
-        
+
         <div className="flex gap-3">
           <input
             type="text"
@@ -119,8 +119,8 @@ export default function ChatInterface({ placementId }: ChatInterfaceProps) {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             disabled={loading}
           />
-          <button 
-            onClick={() => handleSend()} 
+          <button
+            onClick={() => handleSend()}
             disabled={loading || !input.trim()}
             className="btn-primary"
             style={{ padding: '12px 18px' }}
