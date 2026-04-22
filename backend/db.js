@@ -20,20 +20,17 @@ function getDb() {
   // Refined DB interface for PostgreSQL compatibility
   db = {
     prepare: (sql) => {
-      let count = 0;
-      const pgSql = sql.replace(/\?/g, () => `$${++count}`);
-      
       return {
         all: async (params = []) => {
-          const res = await pool.query(pgSql, Array.isArray(params) ? params : [params]);
+          const res = await pool.query(sql, Array.isArray(params) ? params : [params]);
           return res.rows;
         },
         get: async (params = []) => {
-          const res = await pool.query(pgSql, Array.isArray(params) ? params : [params]);
+          const res = await pool.query(sql, Array.isArray(params) ? params : [params]);
           return res.rows[0];
         },
         run: async (params = []) => {
-          await pool.query(pgSql, Array.isArray(params) ? params : [params]);
+          await pool.query(sql, Array.isArray(params) ? params : [params]);
           return { changes: 1 };
         }
       };

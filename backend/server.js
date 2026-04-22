@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { Groq } = require('groq-sdk');
 const { getDb } = require('./db');
-require('dotenv').config({ path: path.join(__dirname, '../.env.local') });
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -114,7 +114,7 @@ app.post('/api/analyze', upload.single('file'), async (req, res) => {
     const db = getDb();
     await db.prepare(`
       INSERT INTO placements (id, image_path, company_name, extracted_data)
-      VALUES (?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4)
     `).run([id, imagePath, companyName, JSON.stringify(extraction)]);
 
     res.json({ id, companyName, extraction, imagePath });
@@ -142,7 +142,7 @@ app.post('/api/placements', async (req, res) => {
     const db = getDb();
     await db.prepare(`
       INSERT INTO placements (id, image_path, company_name, extracted_data)
-      VALUES (?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4)
     `).run([id, "", company_name, JSON.stringify(extraction)]);
     res.json({ success: true, id });
   } catch (error) {
@@ -155,7 +155,7 @@ app.get('/api/placements/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const db = getDb();
-    const placement = await db.prepare("SELECT * FROM placements WHERE id = ?").get([id]);
+    const placement = await db.prepare("SELECT * FROM placements WHERE id = $1").get([id]);
     if (!placement) return res.status(404).json({ error: "Not found" });
     res.json({ placement });
   } catch (error) {
@@ -170,7 +170,7 @@ app.patch('/api/placements/:id', async (req, res) => {
     const { company_name, extraction } = req.body;
     const db = getDb();
     await db.prepare(`
-      UPDATE placements SET company_name = ?, extracted_data = ? WHERE id = ?
+      UPDATE placements SET company_name = $1, extracted_data = $2 WHERE id = $3
     `).run([company_name, JSON.stringify(extraction), id]);
     res.json({ success: true });
   } catch (error) {
@@ -185,11 +185,11 @@ app.post('/api/chat', async (req, res) => {
     const db = getDb();
     let context = "";
     if (placementId) {
-      const placement = await db.prepare("SELECT extracted_data FROM placements WHERE id = ?").get([placementId]);
+      const placement = await db.prepare("SELECT extracted_data FROM placements WHERE id = $1").get([placementId]);
       if (placement) context = `Context: ${placement.extracted_data}\n\n`;
     }
 
-    const historyData = await db.prepare("SELECT role, content FROM messages WHERE placement_id = ? ORDER BY created_at ASC").all([placementId]);
+    const historyData = await db.prepare("SELECT role, content FROM messages WHERE placement_id = $1 ORDER BY created_at ASC").all([placementId]);
     const messages = [
       { role: "system", content: `${context}Instructions: Answer professionaly and concisely.` },
       ...historyData.map(h => ({ role: h.role, content: h.content })),
@@ -203,8 +203,8 @@ app.post('/api/chat', async (req, res) => {
     });
 
     const reply = completion.choices[0]?.message?.content || "Error";
-    await db.prepare("INSERT INTO messages (id, placement_id, role, content) VALUES (?, ?, ?, ?)").run([uuidv4(), placementId, "user", message]);
-    await db.prepare("INSERT INTO messages (id, placement_id, role, content) VALUES (?, ?, ?, ?)").run([uuidv4(), placementId, "assistant", reply]);
+    await db.prepare("INSERT INTO messages (id, placement_id, role, content) VALUES ($1, $2, $3, $4)").run([uuidv4(), placementId, "user", message]);
+    await db.prepare("INSERT INTO messages (id, placement_id, role, content) VALUES ($1, $2, $3, $4)").run([uuidv4(), placementId, "assistant", reply]);
 
     res.json({ reply });
   } catch (error) {
