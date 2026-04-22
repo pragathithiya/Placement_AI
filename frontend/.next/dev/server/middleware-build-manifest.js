@@ -1,0 +1,26 @@
+globalThis.__BUILD_MANIFEST = {
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [
+    "static/chunks/06id_next_dist_build_polyfills_polyfill-nomodule.js"
+  ],
+  "lowPriorityFiles": [
+    "static/development/_buildManifest.js",
+    "static/development/_ssgManifest.js",
+    "static/development/_clientMiddlewareManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_0vimsmv._.js",
+    "static/chunks/06id_next_dist_compiled_next-devtools_index_0s64sj0.js",
+    "static/chunks/06id_next_dist_compiled_react-dom_0a_pvc2._.js",
+    "static/chunks/06id_next_dist_compiled_react-server-dom-turbopack_0j39b26._.js",
+    "static/chunks/06id_next_dist_compiled_0lyprch._.js",
+    "static/chunks/06id_next_dist_client_0zk5-zv._.js",
+    "static/chunks/06id_next_dist_0vs8tm6._.js",
+    "static/chunks/06id_@swc_helpers_cjs_0nhxxp9._.js",
+    "static/chunks/Downloads_Placement_AI_Placement_AI_frontend_0rqeker._.js",
+    "static/chunks/turbopack-Downloads_Placement_AI_Placement_AI_frontend_0rqge98._.js"
+  ]
+};
